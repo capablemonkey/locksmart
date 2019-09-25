@@ -16,6 +16,8 @@ import {
   StatusBar,
 } from 'react-native';
 
+const data = require('./SampleData/racks.json');
+
 import {
   Header,
   LearnMoreLinks,
@@ -24,9 +26,31 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import  MapView, { 
+  PROVIDER_GOOGLE,
+  Marker,
+} from 'react-native-maps';
+
 
 const App = () => {
+  function addMarkers() {
+    let markers = [];
+    let key = 1;
+    data.forEach((rack)=>{
+      let LatLng = {
+        latitude: rack.latitude,
+        longitude: rack.longitude
+      };
+
+      markers.push(<Marker
+        coordinate={LatLng} 
+        key = {key}
+      />)
+      key++;
+    });
+    return markers;
+  }
+
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
@@ -42,6 +66,7 @@ const App = () => {
               longitudeDelta: 0.121,
             }}
           >
+            {addMarkers()}
           </MapView>
         </View>
       </SafeAreaView>
