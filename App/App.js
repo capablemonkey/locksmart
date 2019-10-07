@@ -26,29 +26,70 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import  MapView, { 
+import ClusteredMapView from 'react-native-maps-super-cluster';
+
+import MapView, { 
   PROVIDER_GOOGLE,
   Marker,
+  Callout,
 } from 'react-native-maps';
 
-
+//Map
 const App = () => {
-  function addMarkers() {
-    let markers = [];
-    let key = 1;
-    data.forEach((rack)=>{
-      let LatLng = {
-        latitude: rack.latitude,
-        longitude: rack.longitude
-      };
 
-      markers.push(<Marker
-        coordinate={LatLng} 
-        key = {key}
-      />)
-      key++;
-    });
-    return markers;
+  let mapData = [];
+
+  function convertData(){
+    /*
+      Data format
+      {
+        location: {
+          latitude: 23123123,
+          longitude: 321312
+        },
+        key: 2132
+      }
+    */
+    data.map(value => {
+      let location = {
+        longitude: value.longitude,
+        latitude: value.latitude
+      }
+      mapData.push({location:location});
+    })
+  }
+
+
+  //renders pins
+  function renderMarker(pin) {
+    return (
+      <Marker coordinate={pin.location} />
+    )
+  }
+
+  //renders cluster
+  renderCluster = (cluster, onPress) => {
+    const pointCount = cluster.pointCount,
+          coordinate = cluster.coordinate,
+          clusterId = cluster.clusterId
+
+    return (
+      <Marker identifier={`cluster-${clusterId}`} coordinate={coordinate} onPress={onPress}>
+        <View style={styles.clusterContainer}>
+          <Text style={styles.clusterText}>
+            {pointCount}
+          </Text>
+        </View>
+      </Marker>
+    )
+  }
+
+  //inital location
+  const INIT_REGION = {
+    latitude: 40.7678,
+    longitude: -73.9645,
+    latitudeDelta: 0.15,
+    longitudeDelta: 0.121,
   }
 
   return (
@@ -56,24 +97,23 @@ const App = () => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView> 
         <View style={styles.container}>
-          <MapView
-            provider={PROVIDER_GOOGLE} // Sets map as Google Maps
+          {convertData()}
+          <ClusteredMapView
             style={styles.map}
-            region={{
-              latitude: 40.7678,
-              longitude: -73.9645,
-              latitudeDelta: 0.15,
-              longitudeDelta: 0.121,
-            }}
-          >
-            {addMarkers()}
-          </MapView>
+            initialRegion = {INIT_REGION}
+            data={mapData}
+            renderMarker = {renderMarker}
+            renderCluster={renderCluster}
+            minZoom = {5}
+            animateClusters = {false}
+          />
         </View>
       </SafeAreaView>
     </Fragment>
   );
 };
 
+//Map style
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
@@ -96,6 +136,17 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  clusterContainer: {
+    width: 30,
+    height: 30,
+    padding: 6,
+    borderWidth: 1,
+    borderRadius: 15,
+    alignItems: 'center',
+    borderColor: '#65bc46',
+    justifyContent: 'center',
+    backgroundColor: 'white',
   },
 });
 

@@ -10,7 +10,9 @@
   "dependencies": {
     "react": "16.8.6",
     "react-native": "0.60.5",
-    "react-native-maps": "0.25.0"
+    "react-native-map-clustering": "^2.0.2",
+    "react-native-maps": "0.25.0",
+    "react-native-maps-super-cluster": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
