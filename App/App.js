@@ -6,38 +6,22 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import React from 'react';
 
-const data = require('./SampleData/racks.json');
-
+import { StyleSheet, StatusBar, Text, View} from 'react-native';
+import {Heatmap, Marker } from 'react-native-maps';
+import ClusteredMapView from 'react-native-maps-super-cluster';
 import {
-  Header,
-  LearnMoreLinks,
   Colors,
-  DebugInstructions,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import ClusteredMapView from 'react-native-maps-super-cluster';
+const data = require('./SampleData/racks.json');
+const crime = require('./SampleData/crime.json');
 
-import MapView, { 
-  PROVIDER_GOOGLE,
-  Marker,
-  Callout,
-} from 'react-native-maps';
-
-//Map
 const App = () => {
 
   let mapData = [];
+  let crimeData = [];
 
   function convertData(){
     /*
@@ -56,6 +40,15 @@ const App = () => {
         latitude: value.latitude
       }
       mapData.push({location:location});
+    })
+
+    crime.map(value => {
+      let data = {
+        longitude: value.longitude,
+        latitude: value.latitude,
+        weight: 1,
+      }
+      crimeData.push(data);
     })
   }
 
@@ -86,51 +79,49 @@ const App = () => {
 
   //inital location
   const INIT_REGION = {
-    latitude: 40.7678,
-    longitude: -73.9645,
+    latitude: 40.85858397000004,
+    longitude: -73.90869606999998,
     latitudeDelta: 0.15,
     longitudeDelta: 0.121,
   }
+  /*
+  */
 
   return (
-    <Fragment>
+    <View>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView> 
         <View style={styles.container}>
-          {convertData()}
-          <ClusteredMapView
+          {convertData()}         
+            <ClusteredMapView
             style={styles.map}
             initialRegion = {INIT_REGION}
             data={mapData}
             renderMarker = {renderMarker}
             renderCluster={renderCluster}
-            minZoom = {5}
+            minZoom = {10}
             animateClusters = {false}
-          />
+          >
+            <Heatmap
+              points={crimeData}
+              radius={20}
+              opacity={1}
+              gradient={{
+                  colors: ["#fff600","#ffc302", "#ff8f00", "#ff5b00", "#ff0505"],
+                  startPoints: [0.05, 0.10, 0.20, 0.40, 1],
+                  colorMapSize: 500
+              }}
+          ></Heatmap>
+          </ClusteredMapView>
         </View>
-      </SafeAreaView>
-    </Fragment>
+    </View>
   );
 };
 
 //Map style
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  body: {
-    backgroundColor: Colors.white,
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 1000,
-    width: 400,
+    flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
