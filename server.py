@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
 
-class Rack(db.Model):
+class Racks(db.Model):
     index = db.Column(db.Integer, primary_key=True)
     site_id = db.Column(db.String(255))
     house_number = Column(String(255))
@@ -20,15 +20,15 @@ class Rack(db.Model):
 
 
 def get_rack_by_id(id):
-    rack = Rack.query.filter_by(site_id=id).first()
+    rack = Racks.query.filter_by(site_id=id).first()
     return rack
 
 
 @app.route('/')
 def display():
     test_rack = get_rack_by_id("46203")
-    location = test_rack.latitude+test_rack.longitude
-    return location
+    location = test_rack.latitude
+    return str(location)
 
 
 @app.route('/test')
