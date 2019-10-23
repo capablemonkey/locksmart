@@ -1,9 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 import os
 from flask_sqlalchemy import SQLAlchemy
-# used by class from sqlalchemy.ext.declarative import declarative_base #used by class
 from sqlalchemy import Column, Integer, String, Float
-#from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -11,29 +9,41 @@ db = SQLAlchemy(app)
 
 
 class Racks(db.Model):
-    index = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     site_id = db.Column(db.String(255))
-    house_number = Column(String(255))
-    street_name = Column(String(255))
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
+    house_number = db.Column(db.String(255))
+    street_name = db.Column(db.String(255))
+    latitude = db.Column(db.String(255), nullable=False)
+    longitude = db.Column(db.String(255), nullable=False)
+
+    def serialize(self):
+        return {'id': self.id,
+                'site_id': self.site_id,
+                'house_number': self.house_number,
+                'street_name': self.street_name,
+                'location': {'latitiude': self.latitude,
+                             'longitude': self.longitude}}
 
 
 def get_rack_by_id(id):
     rack = Racks.query.filter_by(site_id=id).first()
-    return rack
+    #rack = Rack(db_rack)
+    return rack.serialize()
 
 
-@app.route('/')
-def display():
-    test_rack = get_rack_by_id("46203")
-    location = test_rack.latitude
-    return str(location)
+def get_racks():
+    all_racks = Racks.query.filter_by().all()
+    return [rack.serialize() for rack in all_racks]
 
 
-@app.route('/test')
-def test():
-    return "Some other page"
+@app.route('/racks', methods=['GET'])
+def racks():
+    return jsonify(get_racks())
+
+
+@app.route('/rack/<id>', methods=['GET'])
+def rack(id):
+    return jsonify(get_rack_by_id(id))
 
 
 if __name__ == '__main__':
