@@ -25,15 +25,40 @@ class Racks(db.Model):
                              'longitude': self.longitude}}
 
 
+class Crimes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    complaint_number = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    offense = db.Column(db.String(255))
+    report_date = db.Column(db.Date)
+    incident_date = db.Column(db.Date)
+    latitude = db.Column(db.String(255), nullable=False)
+    longitude = db.Column(db.String(255), nullable=False)
+
+    def serialize(self):
+        return {'id': self.id,
+                'complaint_number': self.complaint_number,
+                'description': self.description,
+                'offense': self.offense,
+                'report_date': self.report_date,
+                'incident_date': self.incident_date,
+                'location': {'latitiude': self.latitude,
+                             'longitude': self.longitude}}
+
+
 def get_rack_by_id(id):
     rack = Racks.query.filter_by(site_id=id).first()
-    #rack = Rack(db_rack)
     return rack.serialize()
 
 
 def get_racks():
     all_racks = Racks.query.filter_by().all()
     return [rack.serialize() for rack in all_racks]
+
+
+def get_crimes():
+    crimes = Crimes.query.filter_by().all()
+    return [crimes.serialize() for crime in crimes]
 
 
 @app.route('/racks', methods=['GET'])
@@ -44,6 +69,11 @@ def racks():
 @app.route('/rack/<id>', methods=['GET'])
 def rack(id):
     return jsonify(get_rack_by_id(id))
+
+
+@app.route('/crimes', methods=['GET'])
+def crimes():
+    return jsonify(get_crimes())
 
 
 if __name__ == '__main__':
