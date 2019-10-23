@@ -25,7 +25,7 @@ class Racks(db.Model):
                              'longitude': self.longitude}}
 
 
-class Crimes(db.Model):
+class Crime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     complaint_number = db.Column(db.String(255))
     description = db.Column(db.String(255))
@@ -57,8 +57,8 @@ def get_racks():
 
 
 def get_crimes():
-    crimes = Crimes.query.filter_by().all()
-    return [crimes.serialize() for crime in crimes]
+    crimes = Crime.query.filter_by().all()
+    return [crime.serialize() for crime in crimes]
 
 
 @app.route('/racks', methods=['GET'])
