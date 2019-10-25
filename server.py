@@ -21,7 +21,7 @@ class Racks(db.Model):
                 'site_id': self.site_id,
                 'house_number': self.house_number,
                 'street_name': self.street_name,
-                'location': {'latitiude': self.latitude,
+                'location': {'latitude': self.latitude,
                              'longitude': self.longitude}}
 
 
@@ -42,7 +42,7 @@ class Crime(db.Model):
                 'offense': self.offense,
                 'report_date': self.report_date,
                 'incident_date': self.incident_date,
-                'location': {'latitiude': self.latitude,
+                'location': {'latitude': self.latitude,
                              'longitude': self.longitude}}
 
 
