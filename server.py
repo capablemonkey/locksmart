@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['LARGE_DATABASE_URL'] or os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('LARGE_DATABASE_URL') or os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
 
 
