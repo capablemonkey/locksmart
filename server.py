@@ -60,6 +60,9 @@ def get_crimes():
     crimes = Crime.query.filter_by().all()
     return [crime.serialize() for crime in crimes]
 
+@app.route('/')
+def hello():
+    return jsonify({'hello': 'world!'})
 
 @app.route('/racks', methods=['GET'])
 def racks():
