@@ -26,6 +26,7 @@ class Racks(db.Model):
 
 
 class Crime(db.Model):
+    __tablename__ = 'crimes'
     id = db.Column(db.Integer, primary_key=True)
     complaint_number = db.Column(db.String(255))
     description = db.Column(db.String(255))
