@@ -39,6 +39,9 @@ target 'App' do
   pod 'GoogleMaps'
   pod 'Google-Maps-iOS-Utils'
   
+  # Point to the installed version
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker/RNDateTimePicker.podspec'
+
   target 'AppTests' do
     inherit! :search_paths
     # Pods for testing

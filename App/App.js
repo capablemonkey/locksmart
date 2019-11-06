@@ -1,29 +1,38 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
  *
  * @format
  * @flow
  */
 
-import React from 'react';
+import React, {
+  Component
+} from 'react';
 
-import { StyleSheet, StatusBar, Text, View} from 'react-native';
-import {Heatmap, Marker } from 'react-native-maps';
-import ClusteredMapView from 'react-native-maps-super-cluster';
 import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+  StyleSheet,
+  StatusBar,
+  View,
+  Dimensions,
+  Image,
+  Text,
+  TouchableOpacity
+} from 'react-native';
 
-const data = require('./SampleData/racks.json');
-const crime = require('./SampleData/crime.json');
+import TabBar from './components/Tabs';
+import Map from './components/Map';
+import Report from './components/Report';
 
-const App = () => {
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 'map',
+      markerData: [],
+      crimeData: [],
+    }
+  }
 
-  let mapData = [];
-  let crimeData = [];
-
-  function convertData(){
+  componentDidMount() {
     /*
       Data format
       {
@@ -34,111 +43,90 @@ const App = () => {
         key: 2132
       }
     */
-    data.map(value => {
-      let location = {
-        longitude: value.longitude,
-        latitude: value.latitude
-      }
-      mapData.push({location:location});
-    })
+  
+    fetch("https://locksmart.herokuapp.com/racks")
+      .then(response => response.json())
+      .then((responseJson)=> {
+        this.setState({
+          markerData: responseJson,
+        })
+      })
+      .catch(error=>console.log(error)) //to catch the errors if any
+  
+      fetch("https://locksmart.herokuapp.com/crimes")
+      .then(response => response.json())
+      .then((responseJson)=> {
+        let heatData = [];
+        responseJson.forEach(element => {
+          if(element.location.latitude !== null && element.location.longitude !== null)
+            heatData.push(element.location);
+          /*
+          else console.log(element.complaint_number);
+          */
+        });
+        this.setState({
+          crimeData: heatData,
+        })
+      })
+      .catch(error=>console.log(error)) //to catch the errors if any
 
-    crime.map(value => {
-      let data = {
-        longitude: value.longitude,
-        latitude: value.latitude,
-        weight: 1,
-      }
-      crimeData.push(data);
-    })
   }
 
 
-  //renders pins
-  function renderMarker(pin) {
+  render() {
     return (
-      <Marker coordinate={pin.location} />
-    )
-  }
-
-  //renders cluster
-  renderCluster = (cluster, onPress) => {
-    const pointCount = cluster.pointCount,
-          coordinate = cluster.coordinate,
-          clusterId = cluster.clusterId
-
-    return (
-      <Marker identifier={`cluster-${clusterId}`} coordinate={coordinate} onPress={onPress}>
-        <View style={styles.clusterContainer}>
-          <Text style={styles.clusterText}>
-            {pointCount}
-          </Text>
+      <View style={styles.screen}>
+        <StatusBar barStyle="dark-content" />
+        {
+          this.state.page === 'map' && <Map crimeData={this.state.crimeData} markerData={this.state.markerData}/>
+        }
+        {this.state.page === 'report' && <Report/>}
+        <View style={styles.tabBar}>
+          <TouchableOpacity title={'Map'} style={styles.tab} onPress={() => {this.setState({page: 'map'})}}>
+            <View>
+              <Image style={styles.image} source={require('./assets/map.png')} />
+              <Text>Map</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity title={'Report'} style={styles.tab} onPress={() => {this.setState({page: 'report'})}}>
+            <Image style={styles.image} source={require('./assets/clipboard.png')} />
+            <Text>Report</Text>
+          </TouchableOpacity>
         </View>
-      </Marker>
-    )
+      </View>
+    );
   }
-
-  //inital location
-  const INIT_REGION = {
-    latitude: 40.85858397000004,
-    longitude: -73.90869606999998,
-    latitudeDelta: 0.15,
-    longitudeDelta: 0.121,
-  }
-  /*
-  */
-
-  return (
-    <View>
-      <StatusBar barStyle="dark-content" />
-        <View style={styles.container}>
-          {convertData()}         
-            <ClusteredMapView
-            style={styles.map}
-            initialRegion = {INIT_REGION}
-            data={mapData}
-            renderMarker = {renderMarker}
-            renderCluster={renderCluster}
-            minZoom = {10}
-            animateClusters = {false}
-          >
-            <Heatmap
-              points={crimeData}
-              radius={20}
-              opacity={1}
-              gradient={{
-                  colors: ["#fff600","#ffc302", "#ff8f00", "#ff5b00", "#ff0505"],
-                  startPoints: [0.05, 0.10, 0.20, 0.40, 1],
-                  colorMapSize: 500
-              }}
-          ></Heatmap>
-          </ClusteredMapView>
-        </View>
-    </View>
-  );
 };
+
+const { height, width } = Dimensions.get('window');
 
 //Map style
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  clusterContainer: {
-    width: 30,
-    height: 30,
-    padding: 6,
-    borderWidth: 1,
-    borderRadius: 15,
-    alignItems: 'center',
-    borderColor: '#65bc46',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-  },
-});
+    screen: {
+      flexDirection: 'column',
+      ...StyleSheet.absoluteFillObject,
+    },
+    tabBar: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      height: (height / 10),
+      width: width,
+      position: 'absolute',
+      bottom: 0,
+      alignContent: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#FBF5F5',
+
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      flexDirection: 'column',
+    },
+    image: {
+      height: 32,
+      width: 32
+    },
+  });
 
 export default App;
