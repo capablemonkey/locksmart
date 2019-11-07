@@ -69,15 +69,14 @@ def new_crime(address, date):
     # Get address from Bing Maps API
     g_address = geocoder.bing(address, key=BING_KEY)
     if not g_address:
-        return 'invalid address'
-    else:
-        geocode_address = g_address.latlng
-        crime = Crime(incident_date=date,
-                      latitude=geocode_address[0],
-                      longitude=geocode_address[1])
-        db.session.add(crime)
-        db.session.commit()
-    return 'valid address'
+        return False
+    geocode_address = g_address.latlng
+    crime = Crime(incident_date=date,
+                    latitude=geocode_address[0],
+                    longitude=geocode_address[1])
+    db.session.add(crime)
+    db.session.commit()
+    return True
 
 
 @app.route('/')
