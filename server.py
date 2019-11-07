@@ -1,11 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float
+# from pygeocoder import Geocoder
+import geocoder
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('LARGE_DATABASE_URL') or os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'LARGE_DATABASE_URL') or os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
+BING_KEY = os.getenv('BING_KEY')
 
 
 class Racks(db.Model):
@@ -61,9 +65,26 @@ def get_crimes():
     crimes = Crime.query.filter_by().all()
     return [crime.serialize() for crime in crimes]
 
+
+def new_crime(address, date):
+    # Get address from Bing Maps API
+    g_address = geocoder.bing(address, key=BING_KEY)
+    if not g_address:
+        return 'invalid address'
+    else:
+        geocode_address = g_address.latlng
+        crime = Crime(incident_date=date,
+                      latitude=geocode_address[0],
+                      longitude=geocode_address[1])
+        db.session.add(crime)
+        db.session.commit()
+    return 'valid address'
+
+
 @app.route('/')
 def hello():
     return jsonify({'hello': 'world!'})
+
 
 @app.route('/racks', methods=['GET'])
 def racks():
@@ -78,6 +99,15 @@ def rack(id):
 @app.route('/crimes', methods=['GET'])
 def crimes():
     return jsonify(get_crimes())
+
+
+@app.route('/newcrime', methods=['POST', 'GET'])
+def add_crime():
+    addr = request.values.get('address')
+    date = request.values.get('date')
+    ok = new_crime(addr, date)
+
+    return ok
 
 
 if __name__ == '__main__':
