@@ -72,11 +72,11 @@ def new_crime(address, date):
         return 'invalid address'
     geocode_address = g_address.latlng
     crime = Crime(incident_date=date,
-                    latitude=geocode_address[0],
-                    longitude=geocode_address[1])
+                  latitude=geocode_address[0],
+                  longitude=geocode_address[1])
     db.session.add(crime)
     db.session.commit()
-    return 'valid address'
+    return str(crime.id)
 
 
 @app.route('/')
