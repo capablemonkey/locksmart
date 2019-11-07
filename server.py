@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float
-# from pygeocoder import Geocoder
 import geocoder
 
 app = Flask(__name__)
