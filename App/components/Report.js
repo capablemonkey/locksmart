@@ -22,12 +22,26 @@ export default class ReportPage extends Component {
             date: new Date(),
         };
         this.setDate = this.setDate.bind(this);
+        //this.submitButton = this.submitButton.bind(this);
     }
 
     setDate(event,newDate) {
         this.setState({date: newDate});
     }
-
+/*
+    submitButton = () => {
+        fetch(`https://locksmart.herokuapp.com/newcrime?`method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstParam: 'yourValue',
+          secondParam: 'yourOtherValue',
+        }),
+      });)
+    }
+*/
     render() {
         return (
             <View style={styles.container}>
@@ -50,7 +64,7 @@ export default class ReportPage extends Component {
                         <View>
                             <DateTimePicker mode={'date'} value={this.state.date} onChange={this.setDate}/>
                         </View>
-                        <Button title={'Submit'} style={styles.submitButton}></Button>
+                        <Button title={'Submit'} style={styles.submitButton} onPress={}></Button>
                     </View>
                 </View>
             </View>
