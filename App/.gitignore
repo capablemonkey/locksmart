@@ -60,6 +60,7 @@ buck-out/
 
 # Environmental variables
 .env
+App/ios/App/AppDelegate.m
 
 # Sample
 SampleData

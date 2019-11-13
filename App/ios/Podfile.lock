@@ -280,7 +280,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker/RNDateTimePicker.podspec`)"
+  - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -343,7 +343,7 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
   RNDateTimePicker:
-    :path: "../node_modules/@react-native-community/datetimepicker/RNDateTimePicker.podspec"
+    :path: "../node_modules/@react-native-community/datetimepicker"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -380,6 +380,6 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 68e542a59ff1b73563744145bfc45c2b88a3deea
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: 5770b3f41b1e23d1da0a747f3ccfc223424f8ccc
+PODFILE CHECKSUM: ccb067a5ca36fdd35fd3b8d44cd98293b7fe045d
 
 COCOAPODS: 1.8.3
