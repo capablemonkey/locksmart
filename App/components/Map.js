@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 
 import { Dimensions, StyleSheet, Text, View, } from 'react-native';
-import { Heatmap, Marker } from 'react-native-maps';
+import { Heatmap, Marker, PROVIDER_GOOGLE}  from 'react-native-maps';
 import ClusteredMapView from 'react-native-maps-super-cluster';
 
 export default class Map extends Component {
@@ -58,6 +58,7 @@ export default class Map extends Component {
           data={this.props.markerData}
           renderMarker={this.renderMarker}
           renderCluster={this.renderCluster}
+          provider={PROVIDER_GOOGLE} 
           minZoom={10}
           animateClusters={false}
         >
