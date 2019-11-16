@@ -64,7 +64,7 @@ export default class ReportPage extends Component {
                         <View>
                             <DateTimePicker mode={'date'} value={this.state.date} onChange={this.setDate}/>
                         </View>
-                        <Button title={'Submit'} style={styles.submitButton} onPress={}></Button>
+                        <Button title={'Submit'} style={styles.submitButton}></Button>
                     </View>
                 </View>
             </View>
