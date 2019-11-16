@@ -7,8 +7,10 @@
 import React, { Component } from 'react';
 
 import { Dimensions, StyleSheet, Text, View, } from 'react-native';
-import { Heatmap, Marker, PROVIDER_GOOGLE}  from 'react-native-maps';
-import ClusteredMapView from 'react-native-maps-super-cluster';
+
+import MapboxGL from "@react-native-mapbox-gl/maps";
+
+MapboxGL.setAccessToken("PUT YOUR TOKEN HERE");
 
 export default class Map extends Component {
   constructor(props) {
@@ -21,58 +23,71 @@ export default class Map extends Component {
         longitudeDelta: 0.005,
       },
     }
-
-    this.renderMarker = this.renderMarker.bind(this);
-    this.renderCluster = this.renderCluster.bind(this);
   }
 
-  //renders pins
-  renderMarker(pin) {
-    return (
-      <Marker coordinate={pin.location} key={pin.id} tracksViewChanges={false}/>
-    )
+  crimeShape() {
+    const features = this.props.crimeData.map((c) => {
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point", 
+          "coordinates": [parseFloat(c.longitude), parseFloat(c.latitude)]
+        }
+      }
+    });
+
+    console.log(features[0])
+
+    return {
+      "type": "FeatureCollection",
+      "features": features
+    }
   }
 
-  //renders cluster
-  renderCluster = (cluster, onPress) => {
-    const pointCount = cluster.pointCount,
-      coordinate = cluster.coordinate,
-      clusterId = cluster.clusterId
-
-    return (
-      <Marker identifier={`cluster-${clusterId}`} coordinate={coordinate} onPress={onPress} tracksViewChanges={false}>
-        <View style={styles.clusterContainer}>
-          <Text style={styles.clusterText}>
-            {pointCount}
-          </Text>
-        </View>
-      </Marker>
-    )
-  }
   render() {
     return (
-      <View style={styles.container}>
-        <ClusteredMapView
-          style={styles.map}
-          initialRegion={this.state.region}
-          data={this.props.markerData}
-          renderMarker={this.renderMarker}
-          renderCluster={this.renderCluster}
-          provider={PROVIDER_GOOGLE} 
-          minZoom={10}
-          animateClusters={false}
-        >
-          <Heatmap
-            points={this.props.crimeData}
-            radius={100}
-            opacity={1}
-            gradient={{
-              colors: ["#ffc302", "#ff8f00", "#ff5b00", "#ff0505"],
-              startPoints: [0.01, 0.02, 0.3, 0.4],
-              colorMapSize: 256
-            }}
-          ></Heatmap>
-        </ClusteredMapView>
+      <View style={styles.page}>
+        <View style={styles.container}>
+          <MapboxGL.MapView style={styles.map}>
+            <MapboxGL.Camera
+              zoomLevel={10}
+              centerCoordinate={[-73.9911, 40.7359]}
+            />
+
+            <MapboxGL.ShapeSource
+              id="earthquakes"
+              shape={this.crimeShape()}
+            >
+              <MapboxGL.HeatmapLayer
+                id="earthquakes"
+                sourceID="earthquakes"
+                style={{
+                  heatmapRadius: 10,
+                  heatmapWeight: 1.0,
+                  heatmapOpacity: 0.8,
+                  heatmapIntensity: 1.0,
+                  heatmapColor: [
+                    'interpolate',
+                    ['linear'],
+                    ['heatmap-density'],
+                    0,
+                    'rgba(33,102,172,0)',
+                    0.2,
+                    'rgb(103,169,207)',
+                    0.4,
+                    'rgb(209,229,240)',
+                    0.6,
+                    'rgb(253,219,199)',
+                    0.8,
+                    'rgb(239,138,98)',
+                    1,
+                    'rgb(178,24,43)',
+                  ],
+                }}
+              />
+            </MapboxGL.ShapeSource>
+          </MapboxGL.MapView>
+        </View>
       </View>
     );
   }
@@ -80,25 +95,19 @@ export default class Map extends Component {
 
 var { height, width } = Dimensions.get('window');
 
-//Map style
 const styles = StyleSheet.create({
-  map: {
-    ...StyleSheet.absoluteFillObject,
-    height: (9 * height / 10),
-    width: width,
-  },
-  clusterContainer: {
-    width: 35,
-    height: 35,
-    padding: 6,
-    borderWidth: 1,
-    borderRadius: 15,
-    alignItems: 'center',
-    borderColor: '#65bc46',
-    justifyContent: 'center',
-    backgroundColor: 'white',
+  page: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
   },
   container: {
-    ...StyleSheet.absoluteFillObject,
+    height: height,
+    width: width,
+    backgroundColor: "tomato"
   },
+  map: {
+    flex: 1
+  }
 });
