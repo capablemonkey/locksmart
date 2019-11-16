@@ -6,13 +6,21 @@
 
 import React, { Component } from 'react';
 
-import { Dimensions, StyleSheet, Text, View, } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, Button } from 'react-native';
 
 import MapboxGL from "@react-native-mapbox-gl/maps";
 
 MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
 export default class Map extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showCrimes: true,
+      showRacks: true
+    };
+  }
+
   crimeShape() {
     const features = this.props.crimes.map((c) => {
       return {
@@ -56,6 +64,8 @@ export default class Map extends Component {
     return (
       <View style={styles.page}>
         <View style={styles.container}>
+          <Button title="Toggle Racks" onPress={()=> this.setState({showRacks: !this.state.showRacks})}></Button>
+          <Button title="Toggle Crimes" onPress={()=> this.setState({showCrimes: !this.state.showCrimes})}></Button>
           <MapboxGL.MapView style={styles.map}>
             <MapboxGL.Camera
               zoomLevel={10}
@@ -70,6 +80,7 @@ export default class Map extends Component {
                 id="crimes"
                 sourceID="crimes"
                 style={{
+                  visibility: this.state.showCrimes ? 'visible' : 'none',
                   heatmapRadius: [
                     'interpolate',
                     ['linear'],
@@ -109,7 +120,8 @@ export default class Map extends Component {
                 id="racks"
                 sourceID="racks"
                 style={{
-                  circleRadius: 1
+                  circleRadius: 1,
+                  visibility: this.state.showRacks ? 'visible' : 'none',
                 }}
                />
             </MapboxGL.ShapeSource>
