@@ -13,8 +13,6 @@ import MapboxGL from "@react-native-mapbox-gl/maps";
 MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
 export default class Map extends Component {
-    super(props);
-    this.state = {
   crimeShape() {
     const features = this.props.crimes.map((c) => {
       return {
