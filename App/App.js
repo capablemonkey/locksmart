@@ -27,8 +27,8 @@ class App extends Component {
     super(props);
     this.state = {
       page: 'map',
-      markerData: [],
-      crimeData: [],
+      crimes: [],
+      racks: [],
     }
   }
 
@@ -48,7 +48,7 @@ class App extends Component {
       .then(response => response.json())
       .then((responseJson)=> {
         this.setState({
-          markerData: responseJson,
+          racks: responseJson,
         })
       })
       .catch(error=>console.log(error)) //to catch the errors if any
@@ -56,17 +56,17 @@ class App extends Component {
       fetch("https://locksmart.herokuapp.com/crimes")
       .then(response => response.json())
       .then((responseJson)=> {
-        let heatData = [];
+        const validatedCrimes = [];
         responseJson.forEach(element => {
           if(element.location.latitude !== null && element.location.longitude !== null)
-            heatData.push(element.location);
+            validatedCrimes.push(element.location);
           /*
           else console.log(element.complaint_number);
           */
         });
         this.setState({
-          crimeData: heatData,
-        })
+          crimes: validatedCrimes,
+        });
       })
       .catch(error=>console.log(error)) //to catch the errors if any
 
@@ -78,17 +78,31 @@ class App extends Component {
       <View style={styles.screen}>
         <StatusBar barStyle="dark-content" />
         {
-          this.state.page === 'map' && <Map crimeData={this.state.crimeData} markerData={this.state.markerData}/>
+          this.state.page === 'map' &&
+            <Map
+              crimes={this.state.crimes}
+              racks={this.state.racks}/>
         }
-        {this.state.page === 'report' && <Report/>}
+        {
+          this.state.page === 'report' &&
+          <Report/>
+        }
+
         <View style={styles.tabBar}>
-          <TouchableOpacity title={'Map'} style={styles.tab} onPress={() => {this.setState({page: 'map'})}}>
+          <TouchableOpacity
+            title={'Map'}
+            style={styles.tab}
+            onPress={() => {this.setState({page: 'map'})}}>
             <View>
               <Image style={styles.image} source={require('./assets/map.png')} />
               <Text>Map</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity title={'Report'} style={styles.tab} onPress={() => {this.setState({page: 'report'})}}>
+          <TouchableOpacity
+            title={'Report'}
+            style={styles.tab}
+            onPress={() => {this.setState({page: 'report'})}}
+            >
             <Image style={styles.image} source={require('./assets/clipboard.png')} />
             <Text>Report</Text>
           </TouchableOpacity>

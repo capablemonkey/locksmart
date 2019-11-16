@@ -10,23 +10,13 @@ import { Dimensions, StyleSheet, Text, View, } from 'react-native';
 
 import MapboxGL from "@react-native-mapbox-gl/maps";
 
-MapboxGL.setAccessToken("PUT YOUR TOKEN HERE");
+MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
 export default class Map extends Component {
-  constructor(props) {
     super(props);
     this.state = {
-      region: {
-        latitude: 40.7359,
-        longitude: -73.9911,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      },
-    }
-  }
-
   crimeShape() {
-    const features = this.props.crimeData.map((c) => {
+    const features = this.props.crimes.map((c) => {
       return {
         "type": "Feature",
         "geometry": {
@@ -36,12 +26,32 @@ export default class Map extends Component {
       }
     });
 
-    console.log(features[0])
+    // console.log(features[0])
 
     return {
       "type": "FeatureCollection",
       "features": features
-    }
+    };
+  }
+
+  racksShape() {
+    const features = this.props.racks.map((c) => {
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point", 
+          "coordinates": [parseFloat(c.location.longitude), parseFloat(c.location.latitude)]
+        }
+      }
+    });
+
+    // console.log(this.props.racks[0])
+    // console.log(features[0])
+
+    return {
+      "type": "FeatureCollection",
+      "features": features
+    };
   }
 
   render() {
@@ -55,14 +65,20 @@ export default class Map extends Component {
             />
 
             <MapboxGL.ShapeSource
-              id="earthquakes"
+              id="crimes"
               shape={this.crimeShape()}
             >
               <MapboxGL.HeatmapLayer
-                id="earthquakes"
-                sourceID="earthquakes"
+                id="crimes"
+                sourceID="crimes"
                 style={{
-                  heatmapRadius: 10,
+                  heatmapRadius: [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    10, 10,
+                    15, 20
+                  ],
                   heatmapWeight: 1.0,
                   heatmapOpacity: 0.8,
                   heatmapIntensity: 1.0,
@@ -86,6 +102,19 @@ export default class Map extends Component {
                 }}
               />
             </MapboxGL.ShapeSource>
+
+            <MapboxGL.ShapeSource
+              id="racks"
+              shape={this.racksShape()}
+            >
+              <MapboxGL.CircleLayer
+                id="racks"
+                sourceID="racks"
+                style={{
+                  circleRadius: 1
+                }}
+               />
+            </MapboxGL.ShapeSource>
           </MapboxGL.MapView>
         </View>
       </View>
@@ -93,7 +122,7 @@ export default class Map extends Component {
   }
 };
 
-var { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   page: {
