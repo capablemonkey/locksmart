@@ -89,7 +89,7 @@ export default class Map extends Component {
                     15, 20
                   ],
                   heatmapWeight: 1.0,
-                  heatmapOpacity: 0.8,
+                  heatmapOpacity: 0.6,
                   heatmapIntensity: 1.0,
                   heatmapColor: [
                     'interpolate',
@@ -120,7 +120,18 @@ export default class Map extends Component {
                 id="racks"
                 sourceID="racks"
                 style={{
-                  circleRadius: 1,
+                  circleRadius: [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    10,
+                    1,
+                    15,
+                    3,
+                    22,
+                    10
+                  ],
+                  circleColor: "hsl(129, 69%, 40%)",
                   visibility: this.state.showRacks ? 'visible' : 'none',
                 }}
                />
