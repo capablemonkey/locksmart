@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 
-import { Dimensions, StyleSheet, Text, View, Button } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, Button, Switch } from 'react-native';
 
 import MapboxGL from "@react-native-mapbox-gl/maps";
 
@@ -64,8 +64,6 @@ export default class Map extends Component {
     return (
       <View style={styles.page}>
         <View style={styles.container}>
-          <Button title="Toggle Racks" onPress={()=> this.setState({showRacks: !this.state.showRacks})}></Button>
-          <Button title="Toggle Crimes" onPress={()=> this.setState({showCrimes: !this.state.showCrimes})}></Button>
           <MapboxGL.MapView style={styles.map}>
             <MapboxGL.Camera
               zoomLevel={10}
@@ -151,6 +149,17 @@ export default class Map extends Component {
                />
             </MapboxGL.ShapeSource>
           </MapboxGL.MapView>
+
+          <View style={{zIndex: 10, width: 100, left: 10, top: -100, backgroundColor: 'rgba(255, 255, 255, 0.6)' }}>
+            <View style={{flexDirection: 'row'}}>
+              <Switch title="Toggle Racks" value={this.state.showRacks} onChange={()=> this.setState({showRacks: !this.state.showRacks})}></Switch>
+              <Text>Racks</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <Switch title="Toggle Crimes" value={this.state.showCrimes} onChange={()=> this.setState({showCrimes: !this.state.showCrimes})}></Switch>
+              <Text>Crimes</Text>
+            </View>
+          </View>
         </View>
       </View>
     );
