@@ -88,9 +88,9 @@ export default class Map extends Component {
                     9,
                     3,
                     12,
-                    10,
+                    15,
                     22,
-                    30
+                    150
                   ],
                   heatmapWeight: 1.0,
                   heatmapOpacity: 0.6,
@@ -103,7 +103,7 @@ export default class Map extends Component {
                     12,
                     0.3,
                     22,
-                    1
+                    1.0
                   ],
                   heatmapColor: [
                     "interpolate",
