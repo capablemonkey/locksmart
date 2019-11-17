@@ -88,7 +88,7 @@ export default class Map extends Component {
                     9,
                     3,
                     12,
-                    15,
+                    10,
                     22,
                     150
                   ],
