@@ -64,7 +64,7 @@ export default class Map extends Component {
     return (
       <View style={styles.page}>
         <View style={styles.container}>
-          <MapboxGL.MapView style={styles.map}>
+          <MapboxGL.MapView style={styles.map} logoEnabled={false}>
             <MapboxGL.Camera
               zoomLevel={10}
               centerCoordinate={[-73.9911, 40.7359]}
