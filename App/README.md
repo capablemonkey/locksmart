@@ -6,6 +6,7 @@
     2. brew install watchman
     3. brew tap AdoptOpenJDK/openjdk
     4. brew cask install adoptopenjdk8
+    5. Install Android Studio
 3. run npm install -g react-native-cli
 4. cd into App folder
 5. run npm install

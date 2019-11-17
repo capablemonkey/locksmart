@@ -13,9 +13,7 @@
     "@react-native-community/datetimepicker": "^2.1.0",
     "@react-native-mapbox-gl/maps": "^7.0.8",
     "react": "16.9.0",
-    "react-native": "0.61.2",
-    "react-native-maps": "^0.26.1",
-    "react-native-maps-super-cluster": "^1.6.0"
+    "react-native": "0.61.2"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
