@@ -124,6 +124,8 @@ export default class Map extends Component {
               />
             </MapboxGL.ShapeSource>
 
+            <MapboxGL.UserLocation />
+
             <MapboxGL.ShapeSource
               id="racks"
               shape={this.racksShape()}
