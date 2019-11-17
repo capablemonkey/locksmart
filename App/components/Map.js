@@ -150,7 +150,7 @@ export default class Map extends Component {
             </MapboxGL.ShapeSource>
           </MapboxGL.MapView>
 
-          <View style={{zIndex: 10, width: 100, left: 10, top: -100, backgroundColor: 'rgba(255, 255, 255, 0.6)' }}>
+          <View style={{zIndex: 10, width: 110, left: 10, top: -100, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 10, padding: 5 }}>
             <View style={{flexDirection: 'row'}}>
               <Switch title="Toggle Racks" value={this.state.showRacks} onChange={()=> this.setState({showRacks: !this.state.showRacks})}></Switch>
               <Text>Racks</Text>
