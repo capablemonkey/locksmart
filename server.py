@@ -61,7 +61,7 @@ def get_racks():
 
 
 def get_crimes():
-    crimes = Crime.query.filter_by().all()
+    crimes = Crime.query.filter(Crime.report_date >= '2018-01-01').all()
     return [crime.serialize() for crime in crimes]
 
 
