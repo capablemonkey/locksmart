@@ -6,98 +6,183 @@
 
 import React, { Component } from 'react';
 
-import { Dimensions, StyleSheet, Text, View, } from 'react-native';
-import { Heatmap, Marker } from 'react-native-maps';
-import ClusteredMapView from 'react-native-maps-super-cluster';
+import { Dimensions, StyleSheet, Text, View, Button, Switch } from 'react-native';
+
+import MapboxGL from "@react-native-mapbox-gl/maps";
+
+MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
 export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      region: {
-        latitude: 40.7359,
-        longitude: -73.9911,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      },
-    }
-
-    this.renderMarker = this.renderMarker.bind(this);
-    this.renderCluster = this.renderCluster.bind(this);
+      showCrimes: true,
+      showRacks: true
+    };
   }
 
-  //renders pins
-  renderMarker(pin) {
-    return (
-      <Marker coordinate={pin.location} key={pin.id} tracksViewChanges={false}/>
-    )
+  crimeShape() {
+    const features = this.props.crimes.map((c) => {
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point", 
+          "coordinates": [parseFloat(c.longitude), parseFloat(c.latitude)]
+        }
+      }
+    });
+
+    // console.log(features[0])
+
+    return {
+      "type": "FeatureCollection",
+      "features": features
+    };
   }
 
-  //renders cluster
-  renderCluster = (cluster, onPress) => {
-    const pointCount = cluster.pointCount,
-      coordinate = cluster.coordinate,
-      clusterId = cluster.clusterId
+  racksShape() {
+    const features = this.props.racks.map((c) => {
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point", 
+          "coordinates": [parseFloat(c.location.longitude), parseFloat(c.location.latitude)]
+        }
+      }
+    });
 
-    return (
-      <Marker identifier={`cluster-${clusterId}`} coordinate={coordinate} onPress={onPress} tracksViewChanges={false}>
-        <View style={styles.clusterContainer}>
-          <Text style={styles.clusterText}>
-            {pointCount}
-          </Text>
-        </View>
-      </Marker>
-    )
+    // console.log(this.props.racks[0])
+    // console.log(features[0])
+
+    return {
+      "type": "FeatureCollection",
+      "features": features
+    };
   }
+
   render() {
     return (
-      <View style={styles.container}>
-        <ClusteredMapView
-          style={styles.map}
-          initialRegion={this.state.region}
-          data={this.props.markerData}
-          renderMarker={this.renderMarker}
-          renderCluster={this.renderCluster}
-          minZoom={10}
-          animateClusters={false}
-        >
-          <Heatmap
-            points={this.props.crimeData}
-            radius={100}
-            opacity={1}
-            gradient={{
-              colors: ["#ffc302", "#ff8f00", "#ff5b00", "#ff0505"],
-              startPoints: [0.01, 0.02, 0.3, 0.4],
-              colorMapSize: 256
-            }}
-          ></Heatmap>
-        </ClusteredMapView>
+      <View style={styles.page}>
+        <View style={styles.container}>
+          <MapboxGL.MapView style={styles.map} logoEnabled={false}>
+            <MapboxGL.Camera
+              zoomLevel={10}
+              centerCoordinate={[-73.9911, 40.7359]}
+            />
+
+            <MapboxGL.ShapeSource
+              id="crimes"
+              shape={this.crimeShape()}
+            >
+              <MapboxGL.HeatmapLayer
+                id="crimes"
+                sourceID="crimes"
+                style={{
+                  visibility: this.state.showCrimes ? 'visible' : 'none',
+                  heatmapRadius: [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    0,
+                    1,
+                    9,
+                    3,
+                    12,
+                    10,
+                    22,
+                    150
+                  ],
+                  heatmapWeight: 1.0,
+                  heatmapOpacity: 0.6,
+                  heatmapIntensity: [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    0,
+                    0.1,
+                    12,
+                    0.3,
+                    22,
+                    1.0
+                  ],
+                  heatmapColor: [
+                    "interpolate",
+                    ["linear"],
+                    ["heatmap-density"],
+                    0,
+                    "hsla(65, 100%, 50%, 0)",
+                    0.1,
+                    "hsla(52, 73%, 57%, 0.97)",
+                    0.3,
+                    "hsl(29, 100%, 50%)",
+                    0.5,
+                    "hsl(21, 100%, 50%)",
+                    1,
+                    "hsl(0, 97%, 63%)"
+                  ],
+                }}
+              />
+            </MapboxGL.ShapeSource>
+
+            <MapboxGL.UserLocation />
+
+            <MapboxGL.ShapeSource
+              id="racks"
+              shape={this.racksShape()}
+            >
+              <MapboxGL.CircleLayer
+                id="racks"
+                sourceID="racks"
+                style={{
+                  circleRadius: [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    10,
+                    1,
+                    15,
+                    3,
+                    22,
+                    10
+                  ],
+                  circleColor: "hsl(129, 69%, 40%)",
+                  visibility: this.state.showRacks ? 'visible' : 'none',
+                }}
+               />
+            </MapboxGL.ShapeSource>
+          </MapboxGL.MapView>
+
+          <View style={{zIndex: 10, width: 110, left: 10, top: -100, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 10, padding: 5 }}>
+            <View style={{flexDirection: 'row'}}>
+              <Switch title="Toggle Racks" value={this.state.showRacks} onChange={()=> this.setState({showRacks: !this.state.showRacks})}></Switch>
+              <Text>Racks</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <Switch title="Toggle Crimes" value={this.state.showCrimes} onChange={()=> this.setState({showCrimes: !this.state.showCrimes})}></Switch>
+              <Text>Crimes</Text>
+            </View>
+          </View>
+        </View>
       </View>
     );
   }
 };
 
-var { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
-//Map style
 const styles = StyleSheet.create({
-  map: {
-    ...StyleSheet.absoluteFillObject,
-    height: (9 * height / 10),
-    width: width,
-  },
-  clusterContainer: {
-    width: 35,
-    height: 35,
-    padding: 6,
-    borderWidth: 1,
-    borderRadius: 15,
-    alignItems: 'center',
-    borderColor: '#65bc46',
-    justifyContent: 'center',
-    backgroundColor: 'white',
+  page: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
   },
   container: {
-    ...StyleSheet.absoluteFillObject,
+    height: height,
+    width: width,
+    backgroundColor: "tomato"
   },
+  map: {
+    flex: 1
+  }
 });
