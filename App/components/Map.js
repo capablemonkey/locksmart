@@ -19,11 +19,18 @@ export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showCrimes: true,
-      showRacks: true,
+      showCrimes: false,
+      showRacks: false ,
       location: [-73.9911, 40.7359],
       zoomLevel: 10,
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      showCrimes: true,
+      showRacks: true,
+    })
   }
 
   setCenter = (position) => {
@@ -171,7 +178,8 @@ const styles = StyleSheet.create({
     backgroundColor: "tomato"
   },
   map: {
-    height: 9*(height/10),
+    height,
+    width,
     flex: 1,
   }, 
 });

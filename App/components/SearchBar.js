@@ -8,6 +8,7 @@ export default class SearchBar extends React.Component {
         this.state = {
             searchField: '',
             locationList: [],
+            showList: false,
         }
         this.searchLocation = this.searchLocation.bind(this);
         this.searchSubmit = this.searchSubmit.bind(this);
@@ -26,7 +27,8 @@ export default class SearchBar extends React.Component {
         .then(response => response.json())
         .then((responseJson)=> {
             this.setState({
-            locationList: responseJson.results,
+                locationList: responseJson.results,
+                showList: true,
             })
         })
         .catch(error=>console.log(error)) //to catch the errors if any
@@ -42,7 +44,8 @@ export default class SearchBar extends React.Component {
         this.props.setLocation(geometry);
         this.searchBar.clear();
         this.setState({
-            locationList: []
+            locationList: [],
+            showList: false,
         });
     }
 
@@ -70,14 +73,16 @@ export default class SearchBar extends React.Component {
                         onChangeText={this.searchLocation} 
                         returnKeyType='search' 
                         onSubmitEditing={this.searchSubmit}
-                        ref={ref => this.searchBar = ref}>
+                        ref={ref => this.searchBar = ref}
+                        style={styles.searchBox}>
                     </TextInput>
                 </View>
-                <FlatList
+                {
+                    this.state.showList && <FlatList
                     data={this.state.locationList}
                     renderItem={this.renderListItems}
-                    style={styles.ItemList}
-                />
+                    style={styles.ItemList}/>
+                }
             </View>
         )
     }
@@ -87,7 +92,7 @@ const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     searchArea: {
-        height: '50%',
+        height: 0.04 * height,
         position: 'absolute',
         top: '10%',
         marginLeft: '5%',
@@ -98,17 +103,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     searchBar:{
-        height: '8%', 
+        height: '100%', 
         borderTopLeftRadius: 5,
         borderTopRightRadius: 5,
         width: '90%',
         backgroundColor: 'white',
         shadowRadius: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+    },
+    searchBox: {
+        height: '100%',
+        flex: 1,
     },
     ItemList:{
+        position:"absolute",
         width: '90%',
+        top: '100%',
         height: height/2,
     },
     listItem: {

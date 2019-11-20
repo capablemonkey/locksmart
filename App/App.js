@@ -135,27 +135,6 @@ const styles = StyleSheet.create({
       flexDirection: 'column',
       ...StyleSheet.absoluteFillObject,
     },
-    tabBar: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      height: (height / 10),
-      width: width,
-      position: 'absolute',
-      bottom: 0,
-      alignContent: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: '#FBF5F5',
-
-    },
-    tab: {
-      flex: 1,
-      alignItems: 'center',
-      flexDirection: 'column',
-    },
-    image: {
-      height: 32,
-      width: 32
-    },
   });
 
 export default App;
