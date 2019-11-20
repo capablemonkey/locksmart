@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 
-import {Dimensions, StyleSheet, Text, View, TouchableOpacity, Switch } from 'react-native';
+import {Dimensions, StyleSheet, Text, View, TouchableOpacity, Switch, Keyboard } from 'react-native';
 
 import MapboxGL from "@react-native-mapbox-gl/maps";
 import Geolocation from '@react-native-community/geolocation';
@@ -19,8 +19,8 @@ export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showCrimes: false,
-      showRacks: false ,
+      showCrimes: true,
+      showRacks: true ,
       location: [-73.9911, 40.7359],
       zoomLevel: 10,
     };
@@ -42,9 +42,14 @@ export default class Map extends Component {
     Geolocation.getCurrentPosition(this.setCenter);
   }
 
+  handleUnhandledTouches = () => {
+    Keyboard.dismiss();
+    return false;
+  }
+
   render() {
     return (
-      <View style={styles.page}>
+      <View style={styles.page} onStartShouldSetResponder={this.handleUnhandledTouches}>
         <View style={styles.container}>
           <SearchBar setLocation={this.setCenter}/>
           <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) => this.setCenter(e.geometry)}>
@@ -63,7 +68,7 @@ export default class Map extends Component {
                 id="crimes"
                 sourceID="crimes"
                 style={{
-                  visibility: this.state.showCrimes ? 'visible' : 'none',
+                  visibility: this.state.showCrimes&&this.props.dataParsed ? 'visible' : 'none',
                   heatmapRadius: [
                     "interpolate",
                     ["linear"],
@@ -131,7 +136,7 @@ export default class Map extends Component {
                     10
                   ],
                   circleColor: "hsl(129, 69%, 40%)",
-                  visibility: this.state.showRacks ? 'visible' : 'none',
+                  visibility: this.state.showRacks&&this.props.dataParsed ? 'visible' : 'none',
                 }}
                />
             </MapboxGL.ShapeSource>

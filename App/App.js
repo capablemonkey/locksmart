@@ -112,10 +112,12 @@ class App extends Component {
       <View style={styles.screen}>
         <StatusBar barStyle="dark-content" />
         {
-          this.state.page === 'map' && this.state.dataParsed &&
+          this.state.page === 'map' &&
             <Map
               crimeShape={this.state.crimeShape}
-              rackShape={this.state.rackShape}/>
+              rackShape={this.state.rackShape}
+              dataParsed={this.state.dataParsed}
+            />
         }
         {
           this.state.page === 'report' &&
