@@ -17,7 +17,8 @@ export default class SearchBar extends React.Component {
     }
     searchLocation = (text) => {
         this.setState({
-            searchField: text
+            searchField: text,
+            showList: false,
         })
     }
 
@@ -49,6 +50,13 @@ export default class SearchBar extends React.Component {
         });
     }
 
+    clearSearch = () => {
+        this.searchBar.clear();
+        this.setState({
+            showList: false,
+        })
+    }
+
     renderListItems = ({item}) => (
         <TouchableOpacity style={styles.listItem} key={item.name} onPress={()=>this.setLocation(item.geometry.location)}>
             <Image
@@ -67,7 +75,7 @@ export default class SearchBar extends React.Component {
         return(
             <View style={styles.searchArea}>
                 <View style={styles.searchBar}>
-                    <Text style={{borderRightWidth:1, borderRightColor:'black'}}>&#x1f50d;</Text>
+                    <Text>&#x1f50d;</Text>
                     <TextInput  
                         placeholder={"Search for a place or address"} 
                         onChangeText={this.searchLocation} 
@@ -76,6 +84,7 @@ export default class SearchBar extends React.Component {
                         ref={ref => this.searchBar = ref}
                         style={styles.searchBox}>
                     </TextInput>
+                    <TouchableOpacity onPress={(this.clearSearch)}><Text>&#10006;</Text></TouchableOpacity>
                 </View>
                 {
                     this.state.showList && <FlatList
