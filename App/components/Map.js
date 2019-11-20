@@ -6,9 +6,12 @@
 
 import React, { Component } from 'react';
 
-import { Dimensions, StyleSheet, Text, View, Button, Switch } from 'react-native';
+import {Dimensions, StyleSheet, Text, View, TouchableOpacity, Switch } from 'react-native';
 
 import MapboxGL from "@react-native-mapbox-gl/maps";
+import Geolocation from '@react-native-community/geolocation';
+import SearchBar from './SearchBar';
+
 
 MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
@@ -17,62 +20,44 @@ export default class Map extends Component {
     super(props);
     this.state = {
       showCrimes: true,
-      showRacks: true
+      showRacks: true,
+      location: [-73.9911, 40.7359],
+      zoomLevel: 10,
     };
   }
 
-  crimeShape() {
-    const features = this.props.crimes.map((c) => {
-      return {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point", 
-          "coordinates": [parseFloat(c.longitude), parseFloat(c.latitude)]
-        }
-      }
-    });
-
-    // console.log(features[0])
-
-    return {
-      "type": "FeatureCollection",
-      "features": features
-    };
+  setCenter = (position) => {
+    if(position.coordinates)
+      this.setState({
+        location: position.coordinates,
+      })
+    else if(position.coords)
+      this.setState({
+        location: [position.coords.longitude,position.coords.latitude],
+        zoomLevel: 17,
+      })
   }
 
-  racksShape() {
-    const features = this.props.racks.map((c) => {
-      return {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point", 
-          "coordinates": [parseFloat(c.location.longitude), parseFloat(c.location.latitude)]
-        }
-      }
-    });
-
-    // console.log(this.props.racks[0])
-    // console.log(features[0])
-
-    return {
-      "type": "FeatureCollection",
-      "features": features
-    };
+  useUserLocation = () => {
+    Geolocation.getCurrentPosition(this.setCenter);
   }
 
   render() {
     return (
       <View style={styles.page}>
         <View style={styles.container}>
-          <MapboxGL.MapView style={styles.map} logoEnabled={false}>
+          <SearchBar setLocation={this.setCenter}/>
+          <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) => this.setCenter(e.geometry)}>
             <MapboxGL.Camera
-              zoomLevel={10}
-              centerCoordinate={[-73.9911, 40.7359]}
+              zoomLevel={this.state.zoomLevel}
+              centerCoordinate={this.state.location}
+              ref={ref => this.camera = ref}
+              animationDuration={0}
             />
 
             <MapboxGL.ShapeSource
               id="crimes"
-              shape={this.crimeShape()}
+              shape={this.props.crimeShape}
             >
               <MapboxGL.HeatmapLayer
                 id="crimes"
@@ -128,7 +113,7 @@ export default class Map extends Component {
 
             <MapboxGL.ShapeSource
               id="racks"
-              shape={this.racksShape()}
+              shape={this.props.rackShape}
             >
               <MapboxGL.CircleLayer
                 id="racks"
@@ -152,7 +137,7 @@ export default class Map extends Component {
             </MapboxGL.ShapeSource>
           </MapboxGL.MapView>
 
-          <View style={{zIndex: 10, width: 110, left: 10, top: -100, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 10, padding: 5 }}>
+          <View style={{zIndex: 10, width: 110, left: 10, bottom: 150, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 10, padding: 5 }}>
             <View style={{flexDirection: 'row'}}>
               <Switch title="Toggle Racks" value={this.state.showRacks} onChange={()=> this.setState({showRacks: !this.state.showRacks})}></Switch>
               <Text>Racks</Text>
@@ -160,6 +145,9 @@ export default class Map extends Component {
             <View style={{flexDirection: 'row'}}>
               <Switch title="Toggle Crimes" value={this.state.showCrimes} onChange={()=> this.setState({showCrimes: !this.state.showCrimes})}></Switch>
               <Text>Crimes</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity title="User Location" onPress={this.useUserLocation}><Text> Use Current Location</Text></TouchableOpacity>
             </View>
           </View>
         </View>
@@ -183,6 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: "tomato"
   },
   map: {
-    flex: 1
-  }
+    height: 9*(height/10),
+    flex: 1,
+  }, 
 });

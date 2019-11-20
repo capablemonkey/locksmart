@@ -7,6 +7,7 @@ StyleSheet,
 ScrollView, 
 TextInput,
 Button,} from 'react-native';
+import SearchBar from './SearchBar';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -83,11 +84,7 @@ export default class ReportPage extends Component {
                         <View>
                             <DateTimePicker mode={'date'} value={this.state.date} onChange={this.setDate}/>
                         </View>
-<<<<<<< HEAD
                         <Button title={'Submit'} style={styles.submitButton} onPress={this.submitButton}></Button>
-=======
-                        <Button title={'Submit'} style={styles.submitButton}></Button>
->>>>>>> 650446167c1cbc6897741c243ab0ece6c9904d66
                     </View>
                 </View>
             </View>
@@ -99,7 +96,8 @@ const { height, width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
-        ...StyleSheet.absoluteFillObject,
+        height: height,
+        width: width,
     },
     page: {
         height: (9*height/10),

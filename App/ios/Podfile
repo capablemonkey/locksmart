@@ -39,6 +39,8 @@ target 'App' do
   # Mapbox
   pod 'react-native-mapbox-gl', :path => '../node_modules/@react-native-mapbox-gl/maps'
 
+  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
+
   target 'AppTests' do
     inherit! :search_paths
     # Pods for testing

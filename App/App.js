@@ -13,9 +13,6 @@ import {
   StatusBar,
   View,
   Dimensions,
-  Image,
-  Text,
-  TouchableOpacity
 } from 'react-native';
 
 import TabBar from './components/Tabs';
@@ -27,9 +24,11 @@ class App extends Component {
     super(props);
     this.state = {
       page: 'map',
-      crimes: [],
-      racks: [],
+      crimeShape: {},
+      rackShape: {},
+      dataParsed: false,
     }
+    this.setPage = this.setPage.bind(this);
   }
 
   componentDidMount() {
@@ -44,69 +43,85 @@ class App extends Component {
       }
     */
   
-    fetch("https://locksmart.herokuapp.com/racks")
+    let getRacks = fetch("https://locksmart.herokuapp.com/racks")
       .then(response => response.json())
       .then((responseJson)=> {
-        this.setState({
-          racks: responseJson,
-        })
+        const features = responseJson.map((c) => {
+          return {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point", 
+              "coordinates": [parseFloat(c.location.longitude), parseFloat(c.location.latitude)]
+            }
+          }
+        });
+    
+        // console.log(features[0])
+    
+        return {
+          "type": "FeatureCollection",
+          "features": features
+        };
       })
       .catch(error=>console.log(error)) //to catch the errors if any
   
-      fetch("https://locksmart.herokuapp.com/crimes")
+      let getCrimes = fetch("https://locksmart.herokuapp.com/crimes")
       .then(response => response.json())
       .then((responseJson)=> {
-        const validatedCrimes = [];
+        let validatedCrimes = [];
         responseJson.forEach(element => {
           if(element.location.latitude !== null && element.location.longitude !== null)
             validatedCrimes.push(element.location);
-          /*
-          else console.log(element.complaint_number);
-          */
         });
-        this.setState({
-          crimes: validatedCrimes,
+        const features = validatedCrimes.map((c) => {
+          return {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point", 
+              "coordinates": [parseFloat(c.longitude), parseFloat(c.latitude)]
+            }
+          }
         });
+        return {
+          "type": "FeatureCollection",
+          "features": features
+        };
+ 
       })
       .catch(error=>console.log(error)) //to catch the errors if any
 
+      Promise.all([getRacks,getCrimes])
+      .then(data => {
+        this.setState({
+          rackShape: data[0],
+          crimeShape: data[1],
+          dataParsed: true,
+        })
+      })
+
   }
 
+  setPage = (page) => {
+    this.setState({
+      page,
+    })
+  }
 
   render() {
     return (
       <View style={styles.screen}>
         <StatusBar barStyle="dark-content" />
         {
-          this.state.page === 'map' &&
+          this.state.page === 'map' && this.state.dataParsed &&
             <Map
-              crimes={this.state.crimes}
-              racks={this.state.racks}/>
+              crimeShape={this.state.crimeShape}
+              rackShape={this.state.rackShape}/>
         }
         {
           this.state.page === 'report' &&
           <Report/>
         }
-
-        <View style={styles.tabBar}>
-          <TouchableOpacity
-            title={'Map'}
-            style={styles.tab}
-            onPress={() => {this.setState({page: 'map'})}}>
-            <View>
-              <Image style={styles.image} source={require('./assets/map.png')} />
-              <Text>Map</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            title={'Report'}
-            style={styles.tab}
-            onPress={() => {this.setState({page: 'report'})}}
-            >
-            <Image style={styles.image} source={require('./assets/clipboard.png')} />
-            <Text>Report</Text>
-          </TouchableOpacity>
-        </View>
+        <TabBar setPage={this.setPage}/>
       </View>
     );
   }
