@@ -26,13 +26,6 @@ export default class Map extends Component {
     };
   }
 
-  componentDidMount() {
-    this.setState({
-      showCrimes: true,
-      showRacks: true,
-    })
-  }
-
   setCenter = (position) => {
     if(position.coordinates)
       this.setState({

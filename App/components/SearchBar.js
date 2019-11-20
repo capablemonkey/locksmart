@@ -46,6 +46,7 @@ export default class SearchBar extends React.Component {
         this.searchBar.clear();
         this.setState({
             locationList: [],
+            searchField: '',
             showList: false,
         });
     }
@@ -54,6 +55,8 @@ export default class SearchBar extends React.Component {
         this.searchBar.clear();
         this.setState({
             showList: false,
+            locationList: [],
+            searchField: '',
         })
     }
 
