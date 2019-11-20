@@ -23,6 +23,7 @@ export default class SearchBar extends React.Component {
     }
 
     searchSubmit = async () => {
+        if(this.state.searchField === '') return;
         let query = this.state.searchField.replace(' ',('+'))
         await fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?key=${GOOGLE_API_KEY}&query=${query}&location=40.7128,-74.0060`)
         .then(response => response.json())
