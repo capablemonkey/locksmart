@@ -23,7 +23,14 @@ export default class Map extends Component {
       showRacks: true ,
       location: [-73.9911, 40.7359],
       zoomLevel: 10,
+      showList: false,
     };
+  }
+
+  updateShowList = (value) => {
+    this.setState({
+      showList: value,
+    })
   }
 
   setCenter = (position) => {
@@ -44,6 +51,7 @@ export default class Map extends Component {
 
   handleUnhandledTouches = () => {
     Keyboard.dismiss();
+    this.updateShowList(false);
     return false;
   }
 
@@ -51,7 +59,7 @@ export default class Map extends Component {
     return (
       <View style={styles.page} onStartShouldSetResponder={this.handleUnhandledTouches}>
         <View style={styles.container}>
-          <SearchBar setLocation={this.setCenter}/>
+          <SearchBar setLocation={this.setCenter} showList={this.state.showList} updateShowList={this.updateShowList}/>
           <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) => this.setCenter(e.geometry)}>
             <MapboxGL.Camera
               zoomLevel={this.state.zoomLevel}

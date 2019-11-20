@@ -8,18 +8,18 @@ export default class SearchBar extends React.Component {
         this.state = {
             searchField: '',
             locationList: [],
-            showList: false,
         }
         this.searchLocation = this.searchLocation.bind(this);
         this.searchSubmit = this.searchSubmit.bind(this);
         this.renderListItems = this.renderListItems.bind(this);
         this.setLocation = this.setLocation.bind(this);
+        this.onFocus = this.onFocus.bind(this);
     }
     searchLocation = (text) => {
         this.setState({
             searchField: text,
-            showList: false,
-        })
+        });
+        this.props.updateShowList(false);
     }
 
     searchSubmit = async () => {
@@ -30,8 +30,8 @@ export default class SearchBar extends React.Component {
         .then((responseJson)=> {
             this.setState({
                 locationList: responseJson.results,
-                showList: true,
-            })
+            });
+            this.props.updateShowList(true);
         })
         .catch(error=>console.log(error)) //to catch the errors if any
     }
@@ -48,17 +48,17 @@ export default class SearchBar extends React.Component {
         this.setState({
             locationList: [],
             searchField: '',
-            showList: false,
         });
+        this.props.updateShowList(false);
     }
 
     clearSearch = () => {
         this.searchBar.clear();
         this.setState({
-            showList: false,
             locationList: [],
             searchField: '',
-        })
+        });
+        this.props.updateShowList(false);
     }
 
     renderListItems = ({item}) => (
@@ -74,6 +74,12 @@ export default class SearchBar extends React.Component {
         </TouchableOpacity>
         
     );
+    
+    onFocus = () => {
+        if (Array.isArray(this.state.locationList) && this.state.locationList.length) {
+            this.props.updateShowList(true);
+        }
+    }
 
     render() {
         return(
@@ -82,16 +88,17 @@ export default class SearchBar extends React.Component {
                     <Text>&#x1f50d;</Text>
                     <TextInput  
                         placeholder={"Search for a place or address"} 
-                        onChangeText={this.searchLocation} 
+                        onChangeText={this.searchLocation}
+                        onFocus={this.onFocus}
                         returnKeyType='search' 
                         onSubmitEditing={this.searchSubmit}
                         ref={ref => this.searchBar = ref}
                         style={styles.searchBox}>
                     </TextInput>
-                    <TouchableOpacity onPress={(this.clearSearch)}><Text>&#10006;</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={this.clearSearch}><Text>&#10006;</Text></TouchableOpacity>
                 </View>
                 {
-                    this.state.showList && <FlatList
+                    this.props.showList && <FlatList
                     data={this.state.locationList}
                     renderItem={this.renderListItems}
                     style={styles.ItemList}/>
