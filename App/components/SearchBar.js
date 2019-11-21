@@ -1,8 +1,10 @@
 import React from 'react';
-import {Dimensions, Image, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {Dimensions, Image, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, TouchableHighlight} from 'react-native';
 import { GOOGLE_API_KEY } from 'react-native-dotenv'
+import {connect} from 'react-redux';
+import {showList,setCenter,setZoom} from '../redux/actions' 
 
-export default class SearchBar extends React.Component {
+class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -43,7 +45,7 @@ export default class SearchBar extends React.Component {
                 latitude: location.lat
             }
         };
-        this.props.setLocation(geometry);
+        this.setCenter(geometry);
         this.searchBar.clear();
         this.setState({
             locationList: [],
@@ -61,17 +63,28 @@ export default class SearchBar extends React.Component {
         this.props.updateShowList(false);
     }
 
+    setCenter = (position) => {
+        if(position.coordinates)
+          this.props.setCenter(position.coordinates)
+        else if(position.coords) {
+          this.props.setCenter([position.coords.longitude,position.coords.latitude])
+          this.props.setZoom(17)
+        }
+      }
+
     renderListItems = ({item}) => (
-        <TouchableOpacity style={styles.listItem} key={item.name} onPress={()=>this.setLocation(item.geometry.location)}>
-            <Image
-                style={{alignSelf:'center', width: 25, height: 25}}
-                source={{uri: item.icon}}
-            />
-            <View style={{height: 50, width: 300}}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.address}>{item.formatted_address}</Text>
+        <TouchableHighlight key={item.name} onPress={()=>this.setLocation(item.geometry.location)}>
+            <View style={styles.listItem}>
+                <Image
+                    style={{alignSelf:'center', width: 25, height: 25}}
+                    source={{uri: item.icon}}
+                />
+                <View style={{height: 50, width: 300}}>
+                    <Text style={styles.name}>{item.name}</Text>
+                    <Text style={styles.address}>{item.formatted_address}</Text>
+                </View>
             </View>
-        </TouchableOpacity>
+        </TouchableHighlight>
         
     );
     
@@ -108,15 +121,14 @@ export default class SearchBar extends React.Component {
     }
 }
 
-const {height, width} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     searchArea: {
         height: 0.04 * height,
         position: 'absolute',
         top: '10%',
-        marginLeft: '5%',
-        marginRight: '5%',
+        left: '7%',
         width: '90%',
         zIndex: 10,
         flexDirection: 'column',
@@ -128,7 +140,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 5,
         width: '90%',
         backgroundColor: 'white',
-        shadowRadius: 1,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -159,3 +170,17 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     }
 })
+
+const mapStateToProps = state => ({
+    showList: state.reducer.showList
+})
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateShowList: (payload) => dispatch(showList(payload)),
+        setCenter: (payload) => dispatch(setCenter(payload)),
+        setZoom: (payload) => dispatch(setZoom(payload))
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(SearchBar)
