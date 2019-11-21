@@ -22,11 +22,13 @@ class Map extends Component {
   }
 
   setCenter = (position) => {
-    if(position.coordinates)
-      this.props.setCenter(position.coordinates)
+    if(position.coordinates){
+      this.props.setCenter(position.geometry)
+      this.props.setZoom(position.properties.zoomLevel)
+    }
     else if(position.coords) {
       this.props.setCenter([position.coords.longitude,position.coords.latitude])
-      this.props.zoomLevel(17)
+      this.props.setZoom(17)
     }
   }
 
@@ -42,7 +44,7 @@ class Map extends Component {
         <View style={styles.container}>
           <HamburgerButton />
           <SearchBar/>
-          <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) => this.setCenter(e.geometry)}>
+          <MapboxGL.MapView style={styles.map} logoEnabled={true} onRegionDidChange={(e) =>  this.setCenter(e)}>
             <MapboxGL.Camera
               zoomLevel={this.props.zoomLevel}
               centerCoordinate={this.props.location}
@@ -103,8 +105,6 @@ class Map extends Component {
               />
             </MapboxGL.ShapeSource>
 
-            <MapboxGL.UserLocation />
-
             <MapboxGL.ShapeSource
               id="racks"
               shape={this.props.rackShape}
@@ -151,7 +151,9 @@ const styles = StyleSheet.create({
     backgroundColor: "tomato"
   },
   map: {
-    flex: 1
+    flex: 1,
+    width:width,
+    height:height,
   }
 });
 

@@ -47,17 +47,20 @@ class Menu extends React.Component {
         ]
       }]}>
         <Text style={styles.title}>LockSmart</Text>
-        <Text style={styles.sectionTitle}>Settings</Text>
-        <View style={styles.setting}>
-          <Switch title="Toggle Racks" value={this.props.showRacks} onValueChange={() => this.props.toggleRacks()}></Switch>
-          <Text>Racks</Text>
-        </View>
-        <View style={styles.setting}>
-          <Switch title="Toggle Crimes" value={this.props.showCrimes} onValueChange={() => this.props.toggleCrimes()}></Switch>
-          <Text>Crimes</Text>
-        </View>
-        <View style={styles.setting}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Settings</Text>
+          <View style={styles.setting}>
+            <View>
+              <Text style={styles.switchTitle}>Racks</Text>
+              <Text style={styles.switchTitle}>Crimes</Text>
+            </View>
+            <View >
+              <Switch style={styles.switch} title="Toggle Racks" value={this.props.showRacks} onValueChange={() => this.props.toggleRacks()}></Switch>
+              <Switch style={styles.switch} title="Toggle Crimes" value={this.props.showCrimes} onValueChange={() => this.props.toggleCrimes()}></Switch>
+            </View>
+          </View>
           <Button style={styles.userLocationButton} title={"Use Current Location"} onPress={() => this.useUserLocation()}></Button>
+
         </View>
       </Animated.View>
     )
@@ -69,7 +72,6 @@ const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   menu: {
     position:'absolute',
-    paddingTop: '30%',
     left: 0,
     height: height,
     width: .75*width,
@@ -78,19 +80,31 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     backgroundColor: '#ffffff',
     alignItems: 'center',
+    flexDirection:'column',
   },
   title: {
-    fontSize: 30,
-    width: '100%',
+    paddingTop:'20%',
+    width: .75*width,
+    paddingBottom: '10%',
+    backgroundColor: '#3e64ff',
+    flexDirection:'row',
+    alignItems:'center',
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'black',
+    color: 'white',
+    textAlign:'center',
+    fontSize: 40,
+  },  
+  section: {
     width: '100%',
-    alignSelf:'center',
+    height: '70%',
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
+    paddingVertical: 20,
+    textAlign:'center',
+    borderBottomWidth: 5,
+    borderBottomColor: 'black',
   },
   setting: {
     flexDirection: 'row',
@@ -99,6 +113,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
+  switchTitle: {
+    fontSize:20,
+    paddingBottom:20,
+    paddingRight: 30
+  },
+  switch: {
+    paddingBottom:50
+  },
   userLocationButton: {
     borderWidth: 0.5,
     borderRadius: 20,
@@ -106,6 +128,8 @@ const styles = StyleSheet.create({
     padding: 10,
     color:'white',
     backgroundColor: '#337ab7',
+    alignSelf:'center',
+    width:'100%',
   }
 })
 

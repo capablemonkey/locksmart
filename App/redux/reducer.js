@@ -14,8 +14,8 @@ import {combineReducers} from 'redux';
 const initialState = {
   crimeShape: {},
   rackShape: {},
-  showRacks: false,
-  showCrimes: false,
+  showRacks: true,
+  showCrimes: true,
   dataParsed: false,
   showMenu: false,
   showList: false,
@@ -24,7 +24,6 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-  console.log(action.type)
   switch(action.type) {
     case FETCH_DATA:
       return Object.assign({}, state, {
