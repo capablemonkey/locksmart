@@ -38,23 +38,13 @@ class Map extends Component {
     return false;
   }
 
-  getUrl = () => {
-    switch(this.props.stylesURL) {     
-      case "Default": return "mapbox://styles/mapbox/streets-v11"
-      case "Light": return "mapbox://styles/mapbox/light-v10"
-      case "Dark": return "mapbox://styles/mapbox/dark-v10"
-      case "Satellite": return "mapbox://styles/mapbox/satellite-streets-v11"    
-      default: return "mapbox://styles/mapbox/streets-v11"
-    }
-  }
-
   render() {
     return (
       <View style={styles.page} onStartShouldSetResponder={this.handleUnhandledTouches}>
         <View style={styles.container}>
           <HamburgerButton />
           <SearchBar/>
-          <MapboxGL.MapView style={styles.map} styleURL={this.getUrl()} logoEnabled={false} onRegionDidChange={(e) =>  this.setCenter(e)}>
+          <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) =>  this.setCenter(e)}>
             <MapboxGL.Camera
               zoomLevel={this.props.zoomLevel}
               centerCoordinate={this.props.location}

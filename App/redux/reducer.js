@@ -21,7 +21,6 @@ const initialState = {
   showList: false,
   location: [-73.9911, 40.7359],
   zoomLevel: 10,
-  styleURL: "Default",
 }
 
 const reducer = (state = initialState, action) => {
