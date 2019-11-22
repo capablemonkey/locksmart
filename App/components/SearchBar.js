@@ -112,6 +112,9 @@ class SearchBar extends React.Component {
                 </View>
                 {
                     this.props.showList && <FlatList
+                    bounces={false}
+                    overScrollMode={'never'}
+                    keyboardDismissMode={'on-drag'}
                     data={this.state.locationList}
                     renderItem={this.renderListItems}
                     style={styles.ItemList}/>
