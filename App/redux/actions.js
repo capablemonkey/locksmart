@@ -1,13 +1,14 @@
 
 
 export const FETCH_DATA = 'FETCH_DATA';
-export const SET_CENTER = 'SET_CENTER';
-export const SET_ZOOM = 'SET_ZOOM';
 export const DISMISS_VIEW = 'DISMISS_VIEW';
 export const SHOW_MENU = 'SHOW_MENU';
 export const TOGGLE_RACKS = 'TOGGLE_RACKS';
 export const TOGGLE_CRIMES = 'TOGGLE_CRIMES';
 export const SHOW_LIST = 'SHOW_LIST';
+export const SET_MAP_STYLE = "SET_MAP_STYLE";
+export const RELOAD = "RELOAD";
+export const SET_CAMERA = "SET_CAMERA";
 
 export const fetchData = () => dispatch =>  {
   let getRacks = fetch("https://locksmart.herokuapp.com/racks")
@@ -71,20 +72,6 @@ export const fetchData = () => dispatch =>  {
       })
 }
 
-export const setCenter = (payload) => dispatch => {
-  dispatch ({
-    type: SET_CENTER,
-    payload
-  })
-}
-
-export const setZoom = (payload) => dispatch => {
-  dispatch({
-    type: SET_ZOOM,
-    payload
-  })
-}
-
 export const dismissView = () => dispatch => {
   dispatch({
     type: DISMISS_VIEW,
@@ -113,5 +100,31 @@ export const showList = (payload) => dispatch => {
   dispatch({
     type: SHOW_LIST,
     payload,
+  })
+}
+
+export const setMapStyle = (payload) => dispatch => {
+  dispatch({
+    type: SET_MAP_STYLE,
+    payload,
+  })
+}
+
+export const reload = () => dispatch => {
+  dispatch({
+    type: RELOAD,
+  })
+  dispatch({
+    type: RELOAD,
+  })
+}
+
+export const setCamera = (payload) => dispatch => {
+  dispatch({
+    type: SET_CAMERA,
+    payload: {
+      location: payload.location,
+      zoomLevel: payload.zoomLevel
+    }
   })
 }

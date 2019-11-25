@@ -12,7 +12,7 @@ import {Dimensions, StyleSheet, View, Keyboard } from 'react-native';
 import MapboxGL from "@react-native-mapbox-gl/maps";
 import SearchBar from './SearchBar';
 import HamburgerButton from './HamburgerButton';
-import {setCenter, setZoom, dismissView} from '../redux/actions';
+import {setCamera, dismissView,reload} from '../redux/actions';
 
 MapboxGL.setAccessToken("pk.eyJ1IjoiY2FwYWJsZW1vbmtleSIsImEiOiJjazMweGkwNGIwMzhwM2RwYmsxNmlsb2kzIn0.Ejr0e9n32Z0slM0eWKlFKw");
 
@@ -21,21 +21,20 @@ class Map extends Component {
     super(props);
   }
 
-  setCenter = (position) => {
-    if(position.coordinates){
-      this.props.setCenter(position.geometry)
-      this.props.setZoom(position.properties.zoomLevel)
-    }
-    else if(position.coords) {
-      this.props.setCenter([position.coords.longitude,position.coords.latitude])
-      this.props.setZoom(17)
-    }
-  }
-
   handleUnhandledTouches = () => {
     Keyboard.dismiss();
     this.props.dismissView();
     return false;
+  }
+
+  getUrl = () => {
+    switch(this.props.styleURL) {     
+      case "Default": return "mapbox://styles/mapbox/streets-v11"
+      case "Light": return "mapbox://styles/mapbox/light-v10"
+      case "Dark": return "mapbox://styles/mapbox/dark-v10"
+      case "Satellite": return "mapbox://styles/mapbox/satellite-streets-v11"    
+      default: return "mapbox://styles/mapbox/streets-v11"
+    }
   }
 
   render() {
@@ -44,11 +43,10 @@ class Map extends Component {
         <View style={styles.container}>
           <HamburgerButton />
           <SearchBar/>
-          <MapboxGL.MapView style={styles.map} logoEnabled={false} onRegionDidChange={(e) =>  this.setCenter(e)}>
+          <MapboxGL.MapView style={styles.map} styleURL={this.getUrl()} logoEnabled={false} ref={ref => this._map = ref}>
             <MapboxGL.Camera
               zoomLevel={this.props.zoomLevel}
               centerCoordinate={this.props.location}
-              ref={ref => this.camera = ref}
               animationDuration={0}
             />
             <MapboxGL.ShapeSource
@@ -170,9 +168,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    setCenter: (payload) => dispatch(setCenter(payload)),
-    setZoom: (payload) => dispatch(setZoom(payload)),
+    setCamera: (payload) => dispatch(setCamera(payload)),
     dismissView: () => dispatch(dismissView()),
+    reload: () => dispatch(reload()),
   }
 }
 

@@ -32,7 +32,7 @@ class LockSmart extends Component {
     return (
       <View style={styles.screen}>
         <StatusBar barStyle="dark-content" />
-          <Map/>
+          {this.props.reload && <Map/>}
           <Menu/>
       </View>
     );
@@ -40,7 +40,7 @@ class LockSmart extends Component {
 };
 
 const mapStateToProps = state => ({
-  p: state.reducer.dataParsed,
+  reload: !state.reducer.reload,
 })
 
 const mapDispatchToProps = dispatch => {

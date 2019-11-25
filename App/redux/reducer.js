@@ -1,12 +1,14 @@
 import {
   FETCH_DATA,
-  SET_CENTER,
-  SET_ZOOM,
   DISMISS_VIEW,
   SHOW_MENU,
   TOGGLE_RACKS,
   TOGGLE_CRIMES,
   SHOW_LIST,
+  SET_MAP_STYLE,
+  RELOAD,
+  SET_CAMERA,
+  GET_CAMERA
 } from './actions';
 
 import {combineReducers} from 'redux';
@@ -21,6 +23,8 @@ const initialState = {
   showList: false,
   location: [-73.9911, 40.7359],
   zoomLevel: 10,
+  styleURL: "Default",
+  reload: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -31,13 +35,16 @@ const reducer = (state = initialState, action) => {
         crimeShape: action.payload.crimeShape,
         dataParsed: true,
       })
-    case SET_CENTER:
-      return Object.assign({}, state, {
-        location: action.payload
-      })
-    case SET_ZOOM:
-      return Object.assign({}, state, {
-        zoomLevel: action.payload
+    case SET_CAMERA:
+      if(action.payload.location === state.location || action.payload.zoomLevel === state.zoomLevel)
+        return Object.assign({}, state, {
+          location: [action.payload.location[0] + 0.0000001,action.payload.location[1] + 0.0000001],
+          zoomLevel: action.payload.zoomLevel + 0.0000001,
+        })
+      else 
+        return Object.assign({}, state, {
+        location: action.payload.location,
+        zoomLevel: action.payload.zoomLevel,
       })
     case DISMISS_VIEW:
       return Object.assign({}, state, {
@@ -60,6 +67,14 @@ const reducer = (state = initialState, action) => {
       return Object.assign({}, state, {
         showList: action.payload
       })
+    case SET_MAP_STYLE:
+      return Object.assign({}, state, {
+        styleURL: action.payload,
+      })
+    case RELOAD:
+        return Object.assign({}, state, {
+          reload: !state.reload,
+        })
     default: 
       return state;
   }
