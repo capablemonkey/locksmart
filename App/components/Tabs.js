@@ -1,18 +1,27 @@
 
 import React from 'react';
-import { Button, Dimensions, Text, Image, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, Dimensions, Text, Image, View, StyleSheet } from 'react-native';
 
-const TabBar = () => {
-    return (
+const TabBar = (props) => {
+    return (    
         <View style={styles.tabBar}>
-            <View title={'map'} style={styles.tab}>
-                <Image style={styles.image} source={require('../assets/map.png')} />
-                <Text>Map</Text>
+          <TouchableOpacity
+            title={'Map'}
+            style={styles.tab}
+            onPress={() => props.setPage('map')}>
+            <View>
+              <Image style={styles.image} source={require('../assets/map.png')} />
+              <Text>Map</Text>
             </View>
-            <View title={'Report'} style={styles.tab}>
-                <Image style={styles.image} source={require('../assets/clipboard.png')} />
-                <Text>Report</Text>
-            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            title={'Report'}
+            style={styles.tab}
+            onPress={() => props.setPage('report')}
+            >
+            <Image style={styles.image} source={require('../assets/clipboard.png')} />
+            <Text>Report</Text>
+          </TouchableOpacity>
         </View>
     );
 };
@@ -30,18 +39,17 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#FBF5F5',
-
-    },
-    tab: {
+  
+      },
+      tab: {
         flex: 1,
         alignItems: 'center',
         flexDirection: 'column',
-    },
-    image: {
-        height: 35,
-        width: 35
-    },
-
+      },
+      image: {
+        height: 32,
+        width: 32
+      },
 });
 
 export default TabBar;

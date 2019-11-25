@@ -7,6 +7,7 @@ StyleSheet,
 ScrollView, 
 TextInput,
 Button,} from 'react-native';
+import SearchBar from './SearchBar';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -22,26 +23,45 @@ export default class ReportPage extends Component {
             date: new Date(),
         };
         this.setDate = this.setDate.bind(this);
+        this.setAddress = this.setAddress.bind(this);
+        this.setZipCode = this.setZipCode.bind(this);
         //this.submitButton = this.submitButton.bind(this);
     }
 
     setDate(event,newDate) {
         this.setState({date: newDate});
     }
-/*
+
     submitButton = () => {
-        fetch(`https://locksmart.herokuapp.com/newcrime?`method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstParam: 'yourValue',
-          secondParam: 'yourOtherValue',
-        }),
-      });)
+
+        fetch('https://locksmart.herokuapp.com/newcrime', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                address: this.state.address+this.state.zipCode,
+                date: (this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear(),
+            })
+        })
+
+        .then((response) => console.log(response.status))
+        .catch((error) =>{
+            console.error(error);
+        }) 
+        
+
     }
-*/
+
+    setAddress = (newAddress) => {
+        this.setState({address: newAddress});
+    }
+
+    setZipCode = (newZipCode) => {
+        this.setState({zipCode: newZipCode});
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -57,14 +77,14 @@ export default class ReportPage extends Component {
                         <TextInput placeholder={'VIN number'} style={styles.field}/>
                         <Text style={styles.fieldName}>Incident Location</Text>
                         <View style={styles.nameField}>
-                            <TextInput textContentType={'fullStreetAddress'} placeholder={'Address'} style={[styles.field, {flex:3}]}/>
-                            <TextInput textContentType={'postalCode'} placeholder={'ZipCode'} style={[styles.field, {flex:1}]}/>
+                            <TextInput textContentType={'fullStreetAddress'} placeholder={'Address'} style={[styles.field, {flex:3}]} onChangeText={this.setAddress}/>
+                            <TextInput textContentType={'postalCode'} placeholder={'ZipCode'} style={[styles.field, {flex:1}]} onChangeText={this.state.setZipCode}/>
                         </View>
                         <Text style={styles.fieldName}>Incident Date</Text>
                         <View>
                             <DateTimePicker mode={'date'} value={this.state.date} onChange={this.setDate}/>
                         </View>
-                        <Button title={'Submit'} style={styles.submitButton}></Button>
+                        <Button title={'Submit'} style={styles.submitButton} onPress={this.submitButton}></Button>
                     </View>
                 </View>
             </View>
@@ -76,7 +96,8 @@ const { height, width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
-        ...StyleSheet.absoluteFillObject,
+        height: height,
+        width: width,
     },
     page: {
         height: (9*height/10),
