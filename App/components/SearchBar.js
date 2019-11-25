@@ -1,8 +1,10 @@
 import React from 'react';
-import {Dimensions, Image, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {Dimensions, Image, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, TouchableHighlight} from 'react-native';
 import { GOOGLE_API_KEY } from 'react-native-dotenv'
+import {connect} from 'react-redux';
+import {showList,setCamera} from '../redux/actions' 
 
-export default class SearchBar extends React.Component {
+class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -43,7 +45,7 @@ export default class SearchBar extends React.Component {
                 latitude: location.lat
             }
         };
-        this.props.setLocation(geometry);
+        this.setCenter(geometry);
         this.searchBar.clear();
         this.setState({
             locationList: [],
@@ -61,17 +63,26 @@ export default class SearchBar extends React.Component {
         this.props.updateShowList(false);
     }
 
+    setCenter = (position) => {
+        this.props.setCamera({
+            location: [position.coords.longitude,position.coords.latitude],
+            zoomLevel: 17
+        }) 
+    }
+
     renderListItems = ({item}) => (
-        <TouchableOpacity style={styles.listItem} key={item.name} onPress={()=>this.setLocation(item.geometry.location)}>
-            <Image
-                style={{alignSelf:'center', width: 25, height: 25}}
-                source={{uri: item.icon}}
-            />
-            <View style={{height: 50, width: 300}}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.address}>{item.formatted_address}</Text>
+        <TouchableHighlight key={item.name} onPress={()=>this.setLocation(item.geometry.location)}>
+            <View style={styles.listItem}>
+                <Image
+                    style={{alignSelf:'center', width: 25, height: 25}}
+                    source={{uri: item.icon}}
+                />
+                <View style={{height: 50, width: 300, paddingLeft:'2%'}}>
+                    <Text style={styles.name}>{item.name}</Text>
+                    <Text style={styles.address}>{item.formatted_address}</Text>
+                </View>
             </View>
-        </TouchableOpacity>
+        </TouchableHighlight>
         
     );
     
@@ -99,6 +110,9 @@ export default class SearchBar extends React.Component {
                 </View>
                 {
                     this.props.showList && <FlatList
+                    bounces={false}
+                    overScrollMode={'never'}
+                    keyboardDismissMode={'on-drag'}
                     data={this.state.locationList}
                     renderItem={this.renderListItems}
                     style={styles.ItemList}/>
@@ -108,27 +122,24 @@ export default class SearchBar extends React.Component {
     }
 }
 
-const {height, width} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     searchArea: {
         height: 0.04 * height,
         position: 'absolute',
         top: '10%',
-        marginLeft: '5%',
-        marginRight: '5%',
-        width: '90%',
+        left: '10%',
+        width: '80%',
         zIndex: 10,
         flexDirection: 'column',
         alignItems: 'center',
     },
     searchBar:{
         height: '100%', 
-        borderTopLeftRadius: 5,
-        borderTopRightRadius: 5,
-        width: '90%',
+        borderTopLeftRadius: 3,
+        borderTopRightRadius: 3,
         backgroundColor: 'white',
-        shadowRadius: 1,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -138,24 +149,36 @@ const styles = StyleSheet.create({
     },
     ItemList:{
         position:"absolute",
-        width: '90%',
+        width: '100%',
         top: '100%',
         height: height/2,
     },
     listItem: {
         flexDirection: 'row',
         backgroundColor: 'white',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
         borderTopColor: 'black',
         borderTopWidth: 1,
         justifyContent: 'center',
         backgroundColor: 'white',
         paddingHorizontal: 2,
         alignContent: 'flex-start',
-        justifyContent: 'flex-start'
-    },
+        justifyContent: 'flex-start',
+        paddingHorizontal: '2%'
+    }, 
     address: {
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
     }
 })
+
+const mapStateToProps = state => ({
+    showList: state.reducer.showList
+})
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateShowList: (payload) => dispatch(showList(payload)),
+        setCamera: (payload) => dispatch(setCamera(payload)),
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(SearchBar)
