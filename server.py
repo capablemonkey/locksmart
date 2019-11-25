@@ -4,11 +4,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float
 import geocoder
 
+# set up application
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     'LARGE_DATABASE_URL') or os.getenv('DATABASE_URL')
+# SQLAlchemy is the ORM for database calls
 db = SQLAlchemy(app)
+# using bing maps for geocoding
 BING_KEY = os.getenv('BING_KEY')
+
+# Racks object models Racks table in database
 
 
 class Racks(db.Model):
@@ -28,6 +33,7 @@ class Racks(db.Model):
                              'longitude': self.longitude}}
 
 
+# Crime table models Crimes table in database
 class Crime(db.Model):
     __tablename__ = 'crimes'
     id = db.Column(db.Integer, primary_key=True)
@@ -64,6 +70,8 @@ def get_crimes():
     crimes = Crime.query.filter(Crime.report_date >= '2018-01-01').all()
     return [crime.serialize() for crime in crimes]
 
+# Add a new crime to database through report form
+
 
 def new_crime(address, date):
     # Get address from Bing Maps API
@@ -81,7 +89,7 @@ def new_crime(address, date):
 
 @app.route('/')
 def hello():
-    return jsonify({'hello': 'world!'})
+    return jsonify('Locksmart')
 
 
 @app.route('/racks', methods=['GET'])
