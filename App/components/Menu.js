@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Switch, Text, StyleSheet, Dimensions, Animated, TouchableOpacity} from 'react-native';
+import {View, Switch, Text, StyleSheet, Dimensions, Animated, TouchableOpacity, TextInput, Button} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {connect} from 'react-redux';
 import {setCamera, toggleRacks, toggleCrimes, setMapStyle, reload} from '../redux/actions';
 import Dropdown, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 class Menu extends React.Component {
   constructor(props) {
@@ -11,6 +12,9 @@ class Menu extends React.Component {
     this.state = {
       x: new Animated.Value(-(.75*width)),
       text: "",
+      address: '',
+      zipCode: '',
+      date: new Date(),
     }
   }
 
@@ -56,6 +60,38 @@ class Menu extends React.Component {
     this.props.reload();
   }
 
+  setAddress = (newAddress) => {
+    this.setState({address: newAddress});
+  }
+
+  setZipCode = (newZipCode) => {
+    this.setState({zipCode: newZipCode});
+  }
+
+  submitButton = () => {
+    let address = this.state.address+this.state.zipCode;
+    let date = (this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear();
+    let url = "https://locksmart.herokuapp.com/newcrime?address=" + address + "&date=" + date;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+
+    .then((response) => response.text())
+    .then(text => console.log(text))
+    .catch((error) =>{
+        console.error(error);
+    }) 
+    
+  }
+
+  setDate = (event,newDate) => {
+    this.setState({date: newDate});
+  }
+
   render() {
     this.slide();
     return (
@@ -99,6 +135,17 @@ class Menu extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Report</Text>
+          <View style={styles.report}>
+            <TextInput textContentType={'fullStreetAddress'} placeholder={'Address'} style={styles.field} onChangeText={this.setAddress}/>
+            <TextInput textContentType={'postalCode'} placeholder={'ZipCode'} style={styles.field} onChangeText={this.state.setZipCode}/>
+            <View>
+              <DateTimePicker mode={'date'} value={this.state.date} onChange={this.setDate}/>
+            </View>
+            <Button title={'Submit'} style={styles.submitButton} onPress={this.submitButton}></Button>
+          </View>
+        </View>
       </Animated.View>
     )
   }
@@ -138,7 +185,6 @@ const styles = StyleSheet.create({
   section: {
     alignContent:'center',
     width: '100%',
-    height: '70%'
   },
   sectionTitle: {
     fontSize: 30,
@@ -171,7 +217,19 @@ const styles = StyleSheet.create({
     padding: 30,
     backgroundColor: '#e5dfdf',
     opacity: 0.8,
-  }
+  },
+  report: {
+    width: '100%',
+    justifyContent: 'space-between',
+    paddingBottom:20,
+    paddingHorizontal: 30,
+  },
+  field: {
+    height: 30,
+    width: '100%',
+    borderWidth: 1,
+    marginTop: 20,
+  },
 })
 
 const mapStateToProps = state => ({

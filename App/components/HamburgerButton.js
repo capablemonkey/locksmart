@@ -22,7 +22,7 @@ const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   hamburgerMenu: {
-    height: 0.04 * height,
+    height: 0.045 * height,
     position: 'absolute',
     top: '10%',
     width: '10%',

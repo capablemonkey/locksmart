@@ -33,17 +33,15 @@ export default class ReportPage extends Component {
     }
 
     submitButton = () => {
-
-        fetch('https://locksmart.herokuapp.com/newcrime', {
+        let address = this.state.address+this.state.zipCode;
+        let date = (this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear();
+        let url = "https://locksmart.herokuapp.com/newcrime?address=" + address + "&date=" + date;
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                address: this.state.address+this.state.zipCode,
-                date: (this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear(),
-            })
         })
 
         .then((response) => console.log(response.status))
